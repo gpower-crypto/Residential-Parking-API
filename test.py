@@ -1,34 +1,28 @@
+import sys
 import numpy as np
 import pandas as pd
 import sqlite3
-import random
 from sklearn.cluster import KMeans
+import random
+import math
 
-conn = sqlite3.connect("./server/my_database.db")
-# sql = """create table map_parking_spots(
-# 	id integer not null primary key autoincrement,
-# 	location_id int not null,
-# 	dayofweek int not null,   -- 0 or 1
-# 	hourofday int not null,   -- 0, 1, 2, 3
-# 	available int not null default 0,
-# 	foreign key (location_id) references map_nodes(id)
-# );
-# """
+# Retrieve user input from command-line arguments
+lat, long, dayofweek, hourofday = map(float, sys.argv[1:])
 
-# cur = conn.cursor()
-# cur.execute(sql)
-# conn.commit()
+import os
+db_path = os.path.join(os.path.dirname(__file__), "server", "map_nodes.db")
+conn = sqlite3.connect(db_path)
 
+# SQL query to retrieve location data
 sql = 'SELECT id, lat, long from map_nodes;'
 cur = conn.cursor()
 cur.execute(sql)
 locs = cur.fetchall()
 
-
-
-# data creation
+# Data creation
 random.seed(1234)
-random_locs = list(set(random.choices(locs, k = 10000)))   # distinct locations
+
+random_locs = list(set(random.choices(locs, k=10000)))  # Distinct locations
 hours = [0, 1, 2, 3]
 days = [0, 1]
 
@@ -40,38 +34,22 @@ for loc in random_locs:
                 'location_id': loc[0],
                 'lat': loc[1],
                 'long': loc[2],
-                'dayofweek': day, 
+                'dayofweek': day,
                 'hourofday': hour,
                 'available': np.random.randint(0, 10)
             })
-df = pd.DataFrame(data).sample(frac = 0.95, random_state=1234)
-# print(df)
+df = pd.DataFrame(data).sample(frac=0.95, random_state=1234)
 
-# Step: Insert this dataframe into new table
-# https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
-
-# https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-
-
+# Fit a KMeans clustering model to the data
 X = df[['lat', 'long', 'dayofweek', 'hourofday']].to_numpy()
 km = KMeans(n_clusters=20).fit(X)
 
-y = np.array([[1.36, 103.76, 0, 1]])   # data getting from user
+# Predict the cluster for the user's input data
+y = np.array([[lat, long, dayofweek, hourofday]])
 cy = km.predict(y)[0]
-print(f"Cluster of test data point: {cy}")
 
 df['cluster'] = km.predict(X)
 subdf = df.loc[df['cluster'] == cy]
-availabity = subdf['available'].mean()
+availability = math.floor(subdf['available'].mean())
 
-print(df)
-print(subdf)
-print(f"Test data group mean: {availabity}")
-print(f"Parking available at test point: {np.round(availabity)}")
-
-
-
-
-
-
-
+print(availability)  # Print the availability as the output

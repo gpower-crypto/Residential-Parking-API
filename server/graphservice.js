@@ -138,7 +138,7 @@ function findVertexWithMinDist(distances, visited) {
 // Function to load associated nodes with lat-long coordinates from the database
 async function loadAssociatedNodes(nodeId) {
   return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database("my_database.db");
+    const db = new sqlite3.Database("map_nodes.db");
 
     db.get(
       "SELECT lat, long, associatedNodes FROM map_nodes WHERE id = ?",
@@ -201,14 +201,41 @@ function calculateWeight(node1, node2) {
 async function findShortestPath(startNodeId, endNodeId) {
   const { graph, loadNodeInfo } = await createGraph(startNodeId, endNodeId);
 
-  const shortestPath = await dijkstrasAlgorithm(
-    startNodeId,
-    graph,
-    loadNodeInfo
-  );
-  console.log(shortestPath[endNodeId].path);
-  return shortestPath[endNodeId].path;
+  try {
+    const shortestPath = await dijkstrasAlgorithm(
+      startNodeId,
+      graph,
+      loadNodeInfo
+    );
+    console.log(startNodeId, endNodeId);
+
+    !shortestPath[endNodeId];
+    shortestDistance = shortestPath[endNodeId].path;
+    let nodeArr = [];
+
+    console.log(
+      `Shortest distance from node ${startNodeId} to ${endNodeId}: ${shortestDistance}`
+    );
+
+    shortestDistance.map((node) => {
+      nodeArr.push({
+        latitude: loadNodeInfo[node].lat,
+        longitude: loadNodeInfo[node].long,
+      });
+    });
+
+    // console.log(nodeArr);
+    return nodeArr;
+  } catch (error) {
+    console.log(
+      error,
+      `Could not find path from node ${startNodeId} to ${endNodeId}`
+    );
+  }
 }
+
+// Create a dictionary to store loaded node information
+const loadNodeInfo = {};
 
 async function createGraph(startNodeId, endNodeId) {
   const startNode = await loadAssociatedNodes(startNodeId);
@@ -222,9 +249,6 @@ async function createGraph(startNodeId, endNodeId) {
       graph[nodeId] = [];
     }
   }
-
-  // Create a dictionary to store loaded node information
-  const loadNodeInfo = {};
 
   await Promise.all(
     startNode.associatedNodes
@@ -265,18 +289,26 @@ async function createGraph(startNodeId, endNodeId) {
   return { graph, loadNodeInfo };
 }
 
-const startNodeId = 139671182; // Replace with the actual start node ID
-const endNodeId = 4726301690; // Replace with the actual end node ID
+// const startNodeId = 139671182; // Replace with the actual start node ID
+// const endNodeId = 4726301690; // Replace with the actual end node ID
 
-findShortestPath(startNodeId, endNodeId)
-  .then((shortestDistance) => {
-    console.log(
-      `Shortest distance from node ${startNodeId} to ${endNodeId}: ${shortestDistance}`
-    );
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+// findShortestPath(startNodeId, endNodeId)
+//   .then((shortestDistance) => {
+//     console.log(
+//       `Shortest distance from node ${startNodeId} to ${endNodeId}: ${shortestDistance}`
+//     );
+//     let nodeArr = [];
+//     shortestDistance.map((node) => {
+//       nodeArr.push({
+//         latitude: loadNodeInfo[node].lat,
+//         longitude: loadNodeInfo[node].long,
+//       });
+//     });
+//     return nodeArr;
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//   });
 
 // Export the dijkstrasAlgorithm function
-module.exports = dijkstrasAlgorithm;
+module.exports = findShortestPath;
