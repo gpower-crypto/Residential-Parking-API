@@ -8,7 +8,7 @@ app.use(express.json());
 
 // Define an endpoint to predict parking availability
 app.get("/predictAvailability", (req, res) => {
-  // Extract user input from the request
+  // Extract user input from the query parameters
   const { lat, long, dayofweek, hourofday } = req.query;
 
   // Check if all required parameters are provided
@@ -19,10 +19,10 @@ app.get("/predictAvailability", (req, res) => {
   // Execute the Python script with user input
   const pythonProcess = spawn("py", [
     "../test.py",
-    lat.toString(),
-    long.toString(),
-    dayofweek.toString(),
-    hourofday.toString(),
+    lat,
+    long,
+    dayofweek,
+    hourofday,
   ]);
 
   let predictionOutput = "";

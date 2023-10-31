@@ -212,6 +212,21 @@ class MapNode {
       db.close();
     });
   }
+  static clearTable() {
+    const db = new sqlite3.Database("map_nodes.db");
+    return new Promise((resolve, reject) => {
+      db.run("DELETE FROM map_nodes", (err) => {
+        if (err) {
+          console.error("Error clearing table:", err.message);
+          reject(err.message);
+        } else {
+          console.log("Table cleared successfully");
+          resolve();
+        }
+        db.close();
+      });
+    });
+  }
 }
 
 module.exports = MapNode;

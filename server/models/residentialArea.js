@@ -107,7 +107,7 @@ class ResidentialArea {
             { lat: area.lat, lng: area.long }
           );
 
-          return distance <= radius * 1000;
+          return distance <= radius;
         });
 
         db.close();

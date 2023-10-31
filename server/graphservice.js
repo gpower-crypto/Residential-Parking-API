@@ -207,9 +207,13 @@ async function findShortestPath(startNodeId, endNodeId) {
       graph,
       loadNodeInfo
     );
-    console.log(startNodeId, endNodeId);
 
-    !shortestPath[endNodeId];
+    // Check if a path was found
+    if (!shortestPath[endNodeId]) {
+      console.log(`No path found from node ${startNodeId} to ${endNodeId}`);
+      return null; // Return null or another value of your choice
+    }
+
     shortestDistance = shortestPath[endNodeId].path;
     let nodeArr = [];
 
@@ -227,10 +231,11 @@ async function findShortestPath(startNodeId, endNodeId) {
     // console.log(nodeArr);
     return nodeArr;
   } catch (error) {
-    console.log(
+    console.error(
       error,
       `Could not find path from node ${startNodeId} to ${endNodeId}`
     );
+    return null; // Handle the error by returning null or another value
   }
 }
 

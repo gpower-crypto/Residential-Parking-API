@@ -4,7 +4,7 @@ const findShortestPath = require("./graphservice");
 const { retrieveAndStoreRoadData } = require("./storeRoadData");
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(express.json());
 
@@ -20,7 +20,7 @@ app.get("/getDirections", async (req, res) => {
     }
 
     // Call the data retrieval function for both start and end points
-    await retrieveAndStoreRoadData(startLat, startLong, 2000);
+    await retrieveAndStoreRoadData(startLat, startLong, 4000);
 
     // Find the closest road nodes to the start and end coordinates
     const startNodeId = await MapNode.findClosestRoadNodeId(
@@ -34,8 +34,10 @@ app.get("/getDirections", async (req, res) => {
 
     // Dijkstra's algorithm to compute the directions
     findShortestPath(startNodeId, endNodeId)
-      .then((directions) => {
+      .then(async (directions) => {
         console.log(directions);
+        // Clear the table after the shortest path is found
+        await MapNode.clearTable();
         // Respond with the directions
         res.json({ directions });
       })

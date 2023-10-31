@@ -70,7 +70,7 @@ class ParkingAvailability {
 
           // Check if the record already exists
           const query =
-            "SELECT available FROM parking_availability WHERE location_id = ?";
+            "SELECT available, date FROM parking_availability WHERE location_id = ?";
           db.get(query, [locationId], (err, row) => {
             if (err) {
               console.error("Error querying the database:", err.message);
@@ -80,17 +80,21 @@ class ParkingAvailability {
             }
 
             if (row) {
-              // Record already exists, update availability
+              // Record already exists, update availability and date
               const updateQuery =
-                "UPDATE parking_availability SET available = ? WHERE location_id = ?";
-              db.run(updateQuery, [available, locationId], (err) => {
-                if (err) {
-                  console.error("Error updating availability:", err.message);
-                  reject(err.message);
+                "UPDATE parking_availability SET available = ?, date = ? WHERE location_id = ?";
+              db.run(
+                updateQuery,
+                [available, `${year}-${month}-${day}`, locationId],
+                (err) => {
+                  if (err) {
+                    console.error("Error updating availability:", err.message);
+                    reject(err.message);
+                  }
+                  resolve("Parking availability updated successfully.");
+                  db.close(); // Close the database connection
                 }
-                resolve("Parking availability updated successfully.");
-                db.close(); // Close the database connection
-              });
+              );
             } else {
               // Record doesn't exist, insert a new record
               const insertQuery =

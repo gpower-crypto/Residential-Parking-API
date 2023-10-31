@@ -7,9 +7,8 @@ const parser = new XMLParser({
   ignoreAttributes: false,
 });
 
-// const userLat = 1.330151; // Replace with the user's entered latitude
-// const userLong = 103.899753; // Replace with the user's entered longitude
-// const distance = 2000; // The radius around the user's location
+// Flag to track if the database has been set up
+let isDatabaseSetup = false;
 
 async function retrieveAndStoreRoadData(lat, long, distance) {
   const overpassQuery = `
@@ -70,12 +69,16 @@ async function retrieveAndStoreRoadData(lat, long, distance) {
       });
     }
 
+    // Set up the database only if it hasn't been done yet
+    if (!isDatabaseSetup) {
+      await MapNode.setupDatabase();
+      await MapNode.createIndexes();
+      isDatabaseSetup = true;
+    }
+
     const commonReferences = Object.keys(referenceData).filter(
       (ref) => referenceData[ref].associatedNodes.length > 1
     );
-
-    await MapNode.setupDatabase();
-    await MapNode.createIndexes();
 
     const bulkInsertData = commonReferences.map((ref) => {
       const { latitude, longitude, associatedNodes } = referenceData[ref];

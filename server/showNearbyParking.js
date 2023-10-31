@@ -33,7 +33,7 @@ app.get("/api/residential_areas/nearby", (req, res) => {
 });
 
 // Start the Express app
-const port = 3000; // You can specify any port you prefer
+const port = 4000; // You can specify any port you prefer
 app.listen(port, () => {
   console.log(`API server is running on port ${port}`);
 });
