@@ -1,6 +1,6 @@
 # Residential Parking API
 
-The Residential Parking API is tailored to assist users in finding available parking spots within residential areas. It utilizes machine learning models to predict parking spot availability based on parameters such as location, day, and time. Additionally, the API offers features to retrieve nearby residential area information and enables users to contribute real-time updates for accurate availability predictions.
+The Residential Parking API is tailored to assist users in finding available parking spots within residential areas. It utilizes machine learning models to predict parking spot availability based on parameters such as location, day, and time. Additionally, the API offers features to retrieve nearby residential area by implementing Dijkstra's shortest path algorithm using cached map data to optimize driving routes, reducing reliance on external mapping services and enables users to contribute real-time updates for accurate availability predictions.
 
 ## Overview
 
