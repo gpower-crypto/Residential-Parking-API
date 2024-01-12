@@ -16,6 +16,18 @@ The Residential Parking API predicts parking spot availability using machine lea
 
 The Residential Parking API includes an AI chatbot service for parking assistance. The chatbot can answer user queries related to parking locations, availability, and other relevant information.
 
+## API Endpoints Structure
+
+- AI chat bot - http://parking-api-LB-1578947644.us-east-1.elb.amazonaws.com:3000/parkingInfo/getParkingInfo
+  
+- Nearby Residential Parking Spots - http://parking-api-LB-1578947644.us-east-1.elb.amazonaws.com:3000/nearbyParking/residential_areas_nearby?latitude=${desiredLocation.latitude}&longitude=${desiredLocation.longitude}&radius=1000
+  
+- API call to get directions - http://parking-api-LB-1578947644.us-east-1.elb.amazonaws.com:3000/directions/getDirections?startLat=${userLocation.latitude}&startLong=${userLocation.longitude}&endLat=${selectedLocation.lat}&endLong=${selectedLocation.long}
+
+- API request to update the availability - http://parking-api-LB-1578947644.us-east-1.elb.amazonaws.com:3000/showOrUpdate/addOrUpdateParkingAvailability?locationId=${selectedLocation.id}&available=${newAvailability}
+
+- Fetch Parking Spot Availability http://parking-api-LB-1578947644.us-east-1.elb.amazonaws.com:3000/showOrUpdate/parking-availability?locationId=${selectedLocation.id}
+  
 ## Technologies Used
 
 - **Backend:** Node.js, Express.js, Python
